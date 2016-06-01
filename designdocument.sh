@@ -135,6 +135,40 @@ pupu focus
 
 
 
-
 #Possible keybinds
-#"select then"
+$mod-a exec pupu push $FOCUSED #"add"
+$mod-r exec pupu pull $FOCUSED #"remove"
+$mod-A exec pupu push $FOCUSED -F #"add and focus"
+$mod-r exec pupu pull $FOCUSED #"remove"
+
+$mod-c exec pupu push -n AUTO #"clear"
+$mod-f exec pupu focus
+
+$mod-h exec focus-left
+$mod-j exec focus-down
+$mod-k exec focus-up
+$mod-l exec focus-right
+
+
+#"push focused window, go right, push focused window, refocus" is now
+#$mod-alaf
+
+#hidden: []
+#screen: *xterm*,firefox,eog
+#stack:  []
+$mod-a
+#hidden: []
+#screen: *xterm*,firefox,eog
+#stack:  [xterm]
+$mod-l
+#hidden: []
+#screen: xterm,*firefox*,eog
+#stack:  [xterm]
+$mod-A
+#hidden: [eog]
+#screen: xterm,firefox
+#stack:  [xterm, firefox]
+
+
+#Pin xterm, move right, pin firefox, hide:
+$mod-a, $mod-l, $mod-a, $mod-h
