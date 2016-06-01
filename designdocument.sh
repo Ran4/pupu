@@ -1,3 +1,7 @@
+# pupu is a stack-based terminal window manager plugin.
+# Windows are created and added to named stacks. These stacks can then be
+# focused to the available workspaces.
+
 #Currently described arguments:
 --add -a
 --all -A
@@ -28,10 +32,12 @@ pupu -a firefox vim
 #Create and add new firefox and vim windows to currently selected stack
 pupu -ca firefox vim
 
-#Create and add new firefox and vim windows to currently selected stack, then focus it
+#Create and add new firefox and vim windows to currently selected stack, then
+#focus it
 pupu -ca firefox vim -F
 
-#Create and add new windows firefox and vim to New and automatically named stack, then focus it
+#Create and add new windows firefox and vim to New and automatically named
+#stack, then focus it
 pupu -ca firefox vim -NF
 
 #Focusing the currently selected stack on screens
@@ -73,7 +79,8 @@ pupu -mA -s doc -t misc
 #--from is the same as --stack:
 pupu -mA -f doc -t misc
 
-#Add everything in the doc stack to the misc stack (--duplicate --all --from doc --to misc)
+#Add everything in the doc stack to the misc stack (--duplicate --all --from doc
+#--to misc)
 pupu -DA -f doc -t misc
 
 #Add firefox to stacks doc and misc
@@ -137,8 +144,8 @@ pupu -F
 #[Xterm, 5 eog windows]
 #Alternative to last operation: --replace, --with
 pupu -R firefox -t master -w eog*
-#More explicit:
-pupu -f new -t master -R firefox -w eog* #"From stack new to stack master, replace firefox with eog*"
+#More explicit: "From stack new to stack master, replace firefox with eog*"
+pupu -f new -t master -R firefox -w eog*
 
 ###########################################################
 #Version with less manual stack handling:
