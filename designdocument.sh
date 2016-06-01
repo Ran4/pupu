@@ -1,157 +1,175 @@
+#Currently described arguments:
+--add -a
+--all -A
+--create -c
+--duplicate -D
+--focus -F
+--from -f
+--list-stacks -L
+--move -m
+--new-stack -n
+--new-stack-auto -N
+--remove -r
+--select -S
+--stack -s
+--to -t
+
 #List all stacks
-pupu list
+pupu --list-stacks
 #> doc
 #> misc
 
-#Focusing all apps in the stack on screens
-pupu focus
+#Add existing firefox window to currently selected stack
+pupu -a firefox
 
-#Pushing firefox and vim to current stack
-pupu push firefox vim
-pupu focus
+#Add existing firefox and vim windows to currently selected stack
+pupu -a firefox vim
 
-#Pushing emacs to stack doc (creating it if needed)
-pupu push firefox --stack doc
+#Create and add new firefox and vim windows to currently selected stack
+pupu -ca firefox vim
+
+#Create and add new firefox and vim windows to currently selected stack, then focus it
+pupu -ca firefox vim -F
+
+#Create and add new windows firefox and vim to New and automatically named stack, then focus it
+pupu -ca firefox vim -NF
+
+#Focusing the currently selected stack on screens
+pupu -F
+
+#Add emacs to stack doc (creating it if needed)
+pupu -a emacs --stack doc
 #or
-pupu push firefox -s doc
+pupu -a emacs -s doc
 
 #Creating a new stack
-pupu push -s doc
+pupu -n doc
 
 #Remove firefox and vim from stack "doc"
-pupu pull -s doc firefox
-pupu pull vim
+pupu -s doc -r firefox
+pupu -r vim
 #In one go:
-pupu pull -s doc firefox vim
+pupu -s doc -r firefox vim
 
 #Remove everything from stack "doc"
-pupu pull --all --stack doc
+pupu -r --all --stack doc
 #...or
-pupu pull -a -s doc
+pupu -r -A -s doc
 #...or
-pupu pull -as doc
+pupu -rAs doc
+#...or
+pupu -Ars doc
 
 #Move firefox from --stack doc --to misc
-pupu move -s doc -t misc firefox
+pupu -m firefox -s doc -t misc
 #...same as
-pupu pull -s doc firefox
-pupu push -s misc firefox
+pupu -s doc -r firefox
+pupu -s misc -a firefox
 #Also, if doc is active we only need to do
-pupu move -t misc firefox
+pupu -m firefox -t misc
 
 #Move everything on the doc stack to the misc stack
-pupu move -s doc -t misc -a
+pupu -mA -s doc -t misc
 #--from is the same as --stack:
-pupu move -f doc -t misc -a
+pupu -mA -f doc -t misc
 
-#Add everything in the doc stack to the misc stack
-pupu copy -s doc -t misc -a
+#Add everything in the doc stack to the misc stack (--duplicate --all --from doc --to misc)
+pupu -DA -f doc -t misc
 
-#Push firefox to stacks doc and misc
-pupu push firefox -s doc misc
+#Add firefox to stacks doc and misc
+pupu -a firefox -s doc misc
 #...same as
-pupu push firefox -t doc misc
+pupu -a firefox -t doc misc
 
-#Can't push from a stack
-pupu push firefox -f doc #syntax error!
+#Can't add from a stack
+pupu -a firefox -f doc #syntax error!
 
 #Delete stack "doc"
-pupu delete doc
-
+pupu -d doc
 
 #Shortcuts
-#Given stack main = [firefox]:
-pupu move firefox -n browsers
+#Given selected stack main = [firefox]:
+pupu -m firefox -n browsers
 #...same as
-pupu new browsers
-pupu move firefox -t browsers
+pupu -n browsers
+pupu -m firefox -t browsers
 #...same as
-pupu new browsers
-pupu select browsers
-pupu move firefox -f main
+pupu -n browsers
+pupu -S browsers
+pupu -m firefox -f main
 
 #-F to Focus after operation
-pupu push firefox
-pupu focus
+pupu -a firefox
+pupu -F
 #...same as
-pupu push firefox -F
+pupu -a firefox -F
 #TBA: Focus what? The --to stack?
 
 #-S to Select after operation
-pupu push firefox -t browsers -S
+pupu -a firefox -t browsers -S
 #...same as
-pupu push firefox -t browsers
-pupu select browsers
+pupu -a firefox -t browsers
+pupu -S browsers
+
 
 ########################################################
 #Example, implementation of example at
 #https://www.reddit.com/r/linuxquestions/comments/4lv2ph/good_automatic_tiling_window_manager/
 pupu unfocus #Nothing is now shown on screen
-pupu push xterm -s master #Selects stack master is optional
-pupu focus
+pupu -a xterm -s master #Selects stack master is optional
+pupu -F #Focuses windows, e.g. shows them to the screens
 #[Xterm, Empty]
 
-pupu push eog*
-pupu focus
+pupu -a eog* -F
 #[Xterm, 5 eog windows]
 
-pupu push firefox
-pupu focus
+pupu -a firefox -F
 #[Xterm|Firefox, 5 eog windows]
 
-pupu move xterm firefox -n new #Move xterm and firefox to new stack called `new`
-pupu select new
-pupu focus #focus stack `new`
+pupu -m xterm firefox -n new #Move xterm and firefox to new stack called `new`
+pupu -S new
+pupu -F #focus stack `new`
 #[Xterm, Firefox]
 
-pupu pull firefox #removes firefox from stack `new`
-pupu push eog* #adds five eog windows instead
-pupu focus
+pupu -r firefox #removes firefox from stack `new`
+pupu -a eog* #adds five eog windows instead
+pupu -F
 #[Xterm, 5 eog windows]
-#Alternative to last operation:
-pupu replace firefox -t master eog*
+#Alternative to last operation: --replace, --with
+pupu -R firefox -t master -w eog*
 #More explicit:
-pupu replace -f new firefox -t master eog*
+pupu -f new -t master -R firefox -w eog* #"From stack new to stack master, replace firefox with eog*"
 
 ###########################################################
 #Version with less manual stack handling:
-pupu push xterm -n AUTO -SF #[Xterm, Empty]
-pupu push eog* -F #[Xterm, 5 eog windows]
-pupu push firefox -F #[Xterm|Firefox, 5 eog windows]
-pupu move xterm firefox -n AUTO -SF #[Xterm, Firefox]
-pupu replace firefox -t PREV *eog -F #[Xterm, 5 eog windows]
+pupu -a xterm -n AUTO -SF #[Xterm, Empty]
+pupu -a eog* -F #[Xterm, 5 eog windows]
+pupu -a firefox -F #[Xterm|Firefox, 5 eog windows]
+pupu -m xterm firefox -n AUTO -SF #[Xterm, Firefox]
+pupu -R firefox -w eog* -t PREV -F #[Xterm, 5 eog windows]
 
 
 #Toggling between the two created stacks,
 #e.g between [Xterm, 5 eog windows] and
-pupu focus -s PREV -S
-#...same as
-pupu focus PREV -S
-#...same as
-pupu select PREV -F
-#...same as
-pupu select PREV
-pupu focus
-
+pupu -Ss PREV -F #--Select --session PREV --Focus
 
 
 #Possible keybinds
-$mod-a exec pupu push $FOCUSED #"add"
-$mod-r exec pupu pull $FOCUSED #"remove"
-$mod-A exec pupu push $FOCUSED -F #"add and focus"
-$mod-r exec pupu pull $FOCUSED #"remove"
+$mod-a exec pupu -a $FOCUSED #"add"
+$mod-r exec pupu -r $FOCUSED #"remove"
+$mod-A exec pupu -a $FOCUSED -F #"add and focus"
+$mod-r exec pupu -r $FOCUSED #"remove"
 
-$mod-c exec pupu push -n AUTO #"clear"
-$mod-f exec pupu focus
+$mod-c exec pupu -n AUTO #"clear"
+$mod-f exec pupu -F
 
 $mod-h exec focus-left
 $mod-j exec focus-down
 $mod-k exec focus-up
 $mod-l exec focus-right
 
-
-#"push focused window, go right, push focused window, refocus" is now
-#$mod-alaf
+#"Add focused window, go right, add focused window, refocus" is now
+$mod-alaf
 
 #hidden: []
 #screen: *xterm*,firefox,eog
